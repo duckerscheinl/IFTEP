@@ -1,0 +1,11 @@
+# Ignore everything at the top level ...
+/*
+
+# ... except these
+!.gitignore
+!images/
+!*.py
+!*.ipynb
+!requirements.txt
+!README.md
+!LICENSE
