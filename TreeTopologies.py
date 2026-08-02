@@ -1,7 +1,6 @@
 import numpy as np
-import copy
 from pytreenet.core import TreeTensorNetwork, Node
-from pytreenet.random import crandn, random_tensor_node
+from pytreenet.random import crandn
 
 
 def binary_tree_height(N):
@@ -13,19 +12,26 @@ def binary_tree_height(N):
     return h
 
 
-def nodes_binary_tree(N, chi_max, prefix, suffix, parent_id="", subtree_slot=0):
+def nodes_binary_tree(n_leaves, chi_max, prefix, suffix, parent_id="", subtree_slot=0):
+
+    """
+    Leg 0 is the parent bond. Legs 1 + child_slot are child bonds.
+    The final leg is physical (dimension 2 on bath sites and impurities, 1(dummy) on branch nodes).
+    The root's leg 0 is a child bond, since it has no parent.
+    """
+
 
     edges = list()
     shapes = list()
     slots = list()
-    leaf_edges = [[f"{prefix}{i}{suffix}", ""] for i in range(N)]
-    leaf_shapes = [(2, 2) for i in range(N)]
-    leaf_slots = [i%2 for i in range(N)]
+    leaf_edges = [[f"{prefix}{i}{suffix}", ""] for i in range(n_leaves)]
+    leaf_shapes = [(2, 2) for i in range(n_leaves)]
+    leaf_slots = [i%2 for i in range(n_leaves)]
     edges.append(leaf_edges)
     shapes.append(leaf_shapes)
     slots.append(leaf_slots)
 
-    h = binary_tree_height(N=N)
+    h = binary_tree_height(N=n_leaves)
     level = 0
     while level < h:
 
@@ -97,10 +103,10 @@ def random_impurity_binary_tree_ttn(n_bath: np.int32, chi_max: np.int32) -> Tree
 
     h = binary_tree_height(N=n_bath)
     up_edges, up_shapes, up_slots = nodes_binary_tree(
-        N=n_bath, chi_max=chi_max, prefix="bath", suffix="(up)", parent_id="imp(up)"
+        n_leaves=n_bath, chi_max=chi_max, prefix="bath", suffix="(up)", parent_id="imp(up)"
     )
     down_edges, down_shapes, down_slots = nodes_binary_tree(
-        N=n_bath, chi_max=chi_max, prefix="bath", suffix="(down)", parent_id="imp(down)"
+        n_leaves=n_bath, chi_max=chi_max, prefix="bath", suffix="(down)", parent_id="imp(down)"
     )
 
     chi_imp_side = min(2 ** (n_bath + 1), chi_max)
