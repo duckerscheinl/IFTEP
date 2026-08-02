@@ -20,10 +20,7 @@ def nodes_binary_tree(N, chi_max, prefix, suffix, parent_id="", subtree_slot=0):
     slots = list()
     leaf_edges = [[f"{prefix}{i}{suffix}", ""] for i in range(N)]
     leaf_shapes = [(2, 2) for i in range(N)]
-    leaf_slots = np.empty(N, dtype=np.int16)
-    leaf_slots[::2] = 0
-    leaf_slots[1::2] = 1
-    leaf_slots = list(leaf_slots)
+    leaf_slots = [i%2 for i in range(N)]
     edges.append(leaf_edges)
     shapes.append(leaf_shapes)
     slots.append(leaf_slots)
@@ -81,7 +78,7 @@ def add_tree_to_ttn(
         lvl_edges = edges[j]
         lvl_shapes = shapes[j]
         lvl_slots = slots[j]
-        
+
         for i, (node_id, parent_id) in enumerate(lvl_edges):
             tensor = crandn(lvl_shapes[i])
             slot = lvl_slots[i]
@@ -121,7 +118,7 @@ def random_impurity_binary_tree_ttn(n_bath: np.int32, chi_max: np.int32) -> Tree
         child=idown_node, tensor=idown_tensor, child_leg=0, parent_id=iup_ident, parent_leg=0
     )
 
-    add_tree_to_ttn(ttn=ttn, h=h, ids=up_edges, shapes=up_shapes, slots=up_slots)
-    add_tree_to_ttn(ttn=ttn, h=h, ids=down_edges, shapes=down_shapes, legs=down_slots)
+    add_tree_to_ttn(ttn=ttn, h=h, edges=up_edges, shapes=up_shapes, slots=up_slots)
+    add_tree_to_ttn(ttn=ttn, h=h, edges=down_edges, shapes=down_shapes, slots=down_slots)
 
     return ttn
